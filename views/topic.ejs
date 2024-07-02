@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= topic.title %></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
+    <!-- Adicione seus estilos personalizados aqui, se necessário -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+        }
+        .btn-back {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-back:hover {
+            background-color: #0056b3;
+        }
+        .btn-edit {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-edit:hover {
+            background-color: #c82333;
+        }
+        .topic-description {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .topic-description img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 15px;
+        }
+        .topic-description ol {
+            list-style-type: decimal;
+            padding-left: 40px;
+        }
+        .topic-description ul {
+            list-style-type: disc;
+            padding-left: 40px;
+        }
+
+        /* Estilos para o modal de autenticação */
+        .modal-container {
+            display: none;
+            position: fixed;
+            z-index: 999;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 300px;
+            border-radius: 5px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        .modal-header {
+            padding: 10px 16px;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        .modal-footer {
+            padding: 10px 16px;
+            border-top: 1px solid #ccc;
+            text-align: right;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            margin-bottom: 5px;
+            display: block;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+        }
+
+        .btn-secondary {
+            background-color: #6c757d;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background-color: #dc3545;
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1><%= topic.title %></h1>
+        <!-- Exibir a descrição como HTML -->
+        <div class="topic-description">
+            <%- topic.description %>
+        </div><br>
+        <div class="d-flex justify-content-between">
+            <a href="/topicos" class="btn btn-back me-auto">Voltar</a>
+            <button onclick="openModal()" class="btn btn-edit">Editar este tópico</button>
+        </div>
+        
+        <!-- Modal de Autenticação -->
+        <div id="authModal" class="modal-container">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <span class="close" onclick="closeModal()">&times;</span>
+                    <h2>Autenticação de Usuário</h2>
+                </div>
+                <div class="modal-body">
+                    <form id="authForm">
+                        <div class="form-group">
+                            <label for="username" class="form-label">Usuário:</label>
+                            <input type="text" id="username" class="form-control" placeholder="Usuário" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password" class="form-label">Senha:</label>
+                            <input type="password" id="password" class="form-control" placeholder="Senha" required>
+                        </div>
+                        <div class="form-group">
+                            <button type="button" class="btn btn-primary" onclick="authenticate()">Entrar</button>
+                            <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function openModal() {
+            document.getElementById('authModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('authModal').style.display = 'none';
+        }
+
+        function authenticate() {
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+
+            // Adicione sua lógica de autenticação aqui
+            // Aqui estamos apenas verificando se o usuário e senha são "admin"
+            if (username === '@admin' && password === '@admin') {
+                window.location.href = '/topic/edit/<%= topic._id %>';
+            } else {
+                alert('Usuário ou senha inválidos. Tente novamente.');
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Tópico</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/css/bootstrap.min.css">
+    <!-- Adicione o CSS do TinyMCE -->
+    <script src="https://cdn.tiny.cloud/1/t54rwxyf02ei5xcjdx7wqgxnvixnm3qadkp2thyocq6hzudq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+        .container {
+            width: 1700px;
+            height: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow: auto; /* Adicionado para habilitar scroll caso o conteúdo seja maior que o container */
+        }
+        h1 {
+            color: #007bff;
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 2rem; /* Tamanho do título */
+            font-weight: bold; /* Negrito */
+            text-transform: uppercase; /* Texto em caixa alta */
+            letter-spacing: 2px; /* Espaçamento entre letras */
+        }
+        label {
+            font-weight: bold;
+        }
+        .form-control {
+            margin-bottom: 20px;
+        }
+        .form-group {
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0056b3;
+        }
+        .btn-back {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn-back:hover {
+            background-color: #bb2d3b;
+        }
+        .btn-delete {
+            background-color: #dc3545;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+        }
+        .btn-delete:hover {
+            background-color: #bb2d3b;
+        }
+        .topic-description {
+            margin-bottom: 20px;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            background-color: #f8f9fa;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Editar Tópico</h1>
+        <form id="topicForm" action="/topic/edit/<%= topic._id %>" method="POST">
+            <div class="form-group">
+                <label for="title" class="form-label">Título</label>
+                <input type="text" class="form-control" id="title" name="title" value="<%= topic.title %>" style="border: 1px solid #525151; border-radius: 5px; padding: 10px; width: 95%;">
+            </div>
+            <div class="form-group">
+                <label for="description" class="form-label">Descrição</label>
+                <!-- Campo de descrição usando o TinyMCE -->
+                <textarea id="description" name="description" class="form-control" style="width: 100%; border: 1px solid #272727; border-radius: 5px; padding: 10px; height: 500px;"><%= topic.description %></textarea>
+            </div>
+            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button type="submit" class="btn btn-primary me-md-2">Salvar</button>
+                <a href="/topic/<%= topic._id %>" class="btn btn-back">Cancelar</a>
+                <!-- Botão para abrir o pop-up de confirmação -->
+                <button type="button" class="btn btn-delete me-md-2">
+                    <a href="/topicos" onclick="confirmDelete();" style="color: #fff; text-decoration: none;">Excluir</a>
+                </button>
+            </div>
+        </form>
+    </div>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <!-- Adicione o script do TinyMCE -->
+    <script>
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            mergetags_list: [
+                { value: 'First.Name', title: 'First Name' },
+                { value: 'Email', title: 'Email' },
+            ],
+            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+        });
+
+        // Função para lidar com o pop-up de confirmação
+        function confirmDelete() {
+            const confirmDelete = confirm('Tem certeza que deseja excluir este tópico? Esta ação não pode ser desfeita.');
+            if (confirmDelete) {
+                deleteTopic();
+            }
+        }
+
+        // Função para excluir o tópico via AJAX
+        function deleteTopic() {
+            const topicId = '<%= topic._id %>';
+            fetch(`/topic/delete/${topicId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message); // Exibe a mensagem de retorno
+                if (data.success) {
+                    window.location.href = '/topicos'; // Redireciona para a página de tópicos após a exclusão
+                }
+            })
+            .catch((error) => {
+                console.error('Erro:', error);
+            });
+        }
+    </script>
+</body>
+</html>
