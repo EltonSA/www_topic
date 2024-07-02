@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adicionar Tópico</title>
+    <!-- Adicionando o Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Inicialização do TinyMCE com Tiny Cloud -->
+    <script src="https://cdn.tiny.cloud/1/t54rwxyf02ei5xcjdx7wqgxnvixnm3qadkp2thyocq6hzudq/tinymce/5/tinymce.min.js" referrerpolicy="origin"></script>
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="mb-4">Adicionar Tópico</h1>
+        <!-- Formulário para adicionar um novo tópico -->
+        <form id="topicForm" action="/topics" method="POST" novalidate>
+            <div class="mb-3">
+                <label for="title" class="form-label">Título:</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Descrição:</label>
+                <!-- Textarea para a descrição, onde o TinyMCE será inicializado -->
+                <textarea class="form-control" id="description" name="description" rows="10" required></textarea>
+            </div>
+            <!-- Campo de seleção da categoria (não obrigatório) -->
+            <button type="submit" class="btn btn-primary">Adicionar Novo Tópico</button>
+        </form>    
+        <!-- Adicionando o botão "Ver Tópicos Cadastrados" -->
+        <a href="/topicos" class="btn btn-secondary mt-3">Tópicos Cadastrados</a>
+        <!-- Botão "Categorias Cadastradas" -->
+        <a href="/categorias" class="btn btn-secondary mt-3">Categorias Cadastradas</a>
+    </div>
+    
+    <!-- Adicionando o Bootstrap JS (opcional, caso utilize componentes interativos do Bootstrap) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Inicializando o TinyMCE com sua chave de API Tiny Cloud
+        tinymce.init({
+            selector: 'textarea',
+            plugins: 'anchor autolink charmap codesample emoticons image link lists media searchreplace table visualblocks wordcount checklist mediaembed casechange export formatpainter pageembed linkchecker a11ychecker tinymcespellchecker permanentpen powerpaste advtable advcode editimage advtemplate ai mentions tinycomments tableofcontents footnotes mergetags autocorrect typography inlinecss markdown',
+            toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+            tinycomments_mode: 'embedded',
+            tinycomments_author: 'Author name',
+            mergetags_list: [
+                { value: 'First.Name', title: 'First Name' },
+                { value: 'Email', title: 'Email' },
+            ],
+            ai_request: (request, respondWith) => respondWith.string(() => Promise.reject("See docs to implement AI Assistant")),
+            width: 1300,
+            height: 600
+        });
+    </script>
+    
+</body>
+</html>
