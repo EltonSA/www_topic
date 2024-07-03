@@ -9,7 +9,10 @@ const session = require('express-session');
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(express.urlencoded({ extended: true }));
+// Aumentar o limite de tamanho da carga útil
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
+
 app.use(express.static('public'));
 app.use('/tinymce', express.static(path.join(__dirname, 'node_modules', 'tinymce')));
 app.set('view engine', 'ejs');
